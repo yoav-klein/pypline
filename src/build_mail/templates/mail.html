@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{title}}</title>
+    <style type="text/css">
+        {% include "style.css" %}
+    </style>
+</head>
+
+<h1> Build information </h1>
+
+Build name: {{ basic.build_name }} <br>
+Build number: {{ basic.build_number }} <br>
+Build result: {{ basic.result }} <br>
+Repository: {{ basic.repository }} <br>
+Branch: {{ basic.branch }} <br>
+Commit ID: {{ basic.commit_id }} <br>
+
+<a href="link to thebuild">Link to the build page: </a>
+
+{% if test_results %} <h1> Test results </h1>
+ {{ test_results }} {% endif %}
+
+{% if sonarqube %} <h1> Sonarqube results </h1>
+{{ sonarqube }} {% endif %}
+
+</body>
+</html>
