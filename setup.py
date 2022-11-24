@@ -21,7 +21,7 @@ setuptools.setup(
     packages=setuptools.find_packages(where="src"),
     python_requires=">=3.7",
     install_requires=["jinja2", "junit2html"],
-    package_data={"build_mail": files},
+    include_package_data=True,
     entry_points={
         'console_scripts': [
             'send-mail = build_mail.console:main',
