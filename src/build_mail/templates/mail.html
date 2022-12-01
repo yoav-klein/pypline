@@ -10,6 +10,14 @@
 
 <h1> Build information </h1>
 
+{% if basic.project_name %}
+Project name: {{ basic.project_name }}
+{% endif %}
+{% if basic.commit_link %}
+<a href="">Link to code</a>
+{% else %}
+Commit ID: {{ basic.commit_id }}
+{% endif %}
 Build name: {{ basic.build_name }} <br>
 Build number: {{ basic.build_number }} <br>
 Build result: {{ basic.result }} <br>
@@ -21,6 +29,14 @@ Commit ID: {{ basic.commit_id }} <br>
 
 {% if test_results %} <h1> Test results </h1>
  {{ test_results }} {% endif %}
+
+{% if klocwork %}
+
+<h1>Klocwork</h1>
+{{ klocwork.issue1 }}
+{{ klocwork.issue2 }}
+
+{% endif %}
 
 {% if sonarqube %} <h1> Sonarqube results </h1>
 {{ sonarqube }} {% endif %}
