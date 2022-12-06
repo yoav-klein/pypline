@@ -38,8 +38,41 @@ Commit ID: {{ basic.commit_id }} <br>
 
 {% endif %}
 
-{% if sonarqube %} <h1> Sonarqube results </h1>
-{{ sonarqube }} {% endif %}
+{% if sonarqube %} 
+<h1> Sonarqube results </h1>
+
+    Project: {{sonarqube.project_name}} <br>
+    <table >
+    <tr>
+        <th style='background-color: blue;'>Status</th>
+        <th style='background-color: blue;'>Critical</th>
+        <th style='background-color: blue;'>Major </th>
+        <th style='background-color: blue;'>Blocker</th>
+        <th style='background-color: blue;'>Minor</th>
+    </tr>
+    <tr>
+        <td> Bugs</td>
+        <td>{{sonarqube.BUG.CRITICAL}}</td>
+        <td>{{sonarqube.BUG.MAJOR}}</td>
+        <td>{{sonarqube.BUG.BLOCKER}}</td>
+        <td>{{sonarqube.BUG.MINOR}}</td>
+    </tr>
+    <tr>
+        <td> Vulnerabilities</td>
+        <td>{{sonarqube.VULNERABILITY.CRITICAL}}</td>
+        <td>{{sonarqube.VULNERABILITY.MAJOR}}</td>
+        <td>{{sonarqube.VULNERABILITY.BLOCKER}}</td>
+        <td>{{sonarqube.VULNERABILITY.MINOR}}</td>
+    </tr>
+    <tr>
+        <td> Code Smells</td>
+        <td>{{sonarqube.CODE_SMELL.CRITICAL}}</td>
+        <td>{{sonarqube.CODE_SMELL.MAJOR}}</td>
+        <td>{{sonarqube.CODE_SMELL.BLOCKER}}</td>
+        <td>{{sonarqube.CODE_SMELL.MINOR}}</td>
+    </tr>
+    </table><br>
+{% endif %}
 
 </body>
 </html>
