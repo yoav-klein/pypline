@@ -1,7 +1,8 @@
 
 import os
 import argparse
-
+import subprocess
+import json
 from jinja2 import Environment, PackageLoader
 
 class Globals:
@@ -27,10 +28,37 @@ def klocwork(kw_project: str, kw_server: str) -> dict:
         'issue2': "very good"
     }
 
-def sonarqube():
+def sonarqube(sonar_project, sonar_token,sonar_server="sonarqube.rafael.co.il"):
     # contruct html block with results
-    html_block = "sonarqube results"
-    return html_block
+
+    sonar_server="sonarqube.rafael.co.il"
+
+    uri = f"https://{sonar_server}/api/issues/search?componentKeys={sonar_project}&resolved=false"
+
+    def get_issues_by_severity(severity,issue_type=''):
+        if(issue_type):
+            issue_type = "&types="+issue_type
+
+        json_res = subprocess.run(f'curl -u {sonar_token}: {uri}&severities={severity}{issue_type}', stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        
+        res = json.loads(json_res.stdout)
+
+        return res["total"] 
+
+    sq_dic ={
+        'BUG':{},
+        'VULNERABILITY':{},
+        'CODE_SMELL':{}
+    }
+    
+    sq_dic['project_name'] = sonar_project
+
+    for type in ('BUG','VULNERABILITY','CODE_SMELL'):
+        for severity in('CRITICAL','MAJOR','BLOCKER','MINOR'):
+            sq_dic[type][severity] = get_issues_by_severity(severity,type)
+ 
+
+    return sq_dic
 
 def test_results():
     html_block = "test results"
