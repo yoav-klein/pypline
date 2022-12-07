@@ -4,11 +4,22 @@ import argparse
 import subprocess
 import json
 from jinja2 import Environment, PackageLoader
-
+import xml.etree.ElementTree as ET
 class Globals:
     ci_env = ''
 
+def coverage(coberture_path) -> dict:
 
+    root = ET.parse(coberture_path).getroot()
+
+    dic_of_atrib = root.attrib
+    dic_of_atrib['line-rate'] = "{0:.1%}".format(float(dic_of_atrib['line-rate']))
+    dic_of_atrib["uncovered-lines"] = int(dic_of_atrib["lines-valid"]) - int(dic_of_atrib["lines-covered"])
+    for atr_k in dic_of_atrib :
+        print(f"{atr_k}: {dic_of_atrib[atr_k]}")
+    return dic_of_atrib
+
+    
 def blackduck() -> str:
     """
     return html block 
@@ -123,6 +134,9 @@ def render_template(args):
     
     if args.kw_project:
         context['klocwork'] = klocwork(args.kw_project, args.kw_server)
+
+    if args.code_coverage:
+        context['coverage'] = coverage(args.code_coverage)
 
     print(context)
     print(template.render(context))

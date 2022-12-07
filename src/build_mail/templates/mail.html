@@ -74,5 +74,34 @@ Commit ID: {{ basic.commit_id }} <br>
     </table><br>
 {% endif %}
 
+      
+{% if coverage %} 
+<h1> Coverage results </h1>
+<table >
+    <tr>  
+        <td> Covered Lines</td>  
+        <td>{{coverage["lines-covered"]}}</td> 
+    </tr>
+    <tr>  
+        <td> Uncovered Lines</td>  
+        <td>{{coverage["uncovered-lines"]}}</td> </tr>
+    <tr>  
+        <td> Coverable Lines</td>  
+        <td>{{coverage["lines-valid"]}}</td> 
+    </tr>
+    <tr>  
+        <td> Line Coverage</td>  
+        <td>{{coverage["line-rate"]}}</td> 
+    </tr>
+
+    <tr>  
+        <td colspan="2">
+            <progress value="32" max="100"> </progress>
+        </td> 
+    </tr>
+ 
+    </table><br>  
+{% endif %}
+
 </body>
 </html>

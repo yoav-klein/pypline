@@ -17,6 +17,21 @@ h1 {
     margin-bottom: 1mm;
 }
 
+table,th,td {
+    border: 1px solid black; 
+    border-collapse: collapse; 
+}
+
+th, td{
+    padding: 5px;
+ 
+}
+
+th {
+    
+    background-color: #007acc;
+}
+
 .footer {
     font-style: italic;
     font-size: small;
@@ -181,4 +196,18 @@ h1 {
 
 .matrix-even {
     background-color: lightgray;
+}
+
+progress {
+    text-align: center;
+
+    background-color: black;
+}
+
+progress::-webkit-progress-value {
+background: green;
+border: 2px;
+}
+progress::-webkit-progress-bar {
+background: red;
 }
