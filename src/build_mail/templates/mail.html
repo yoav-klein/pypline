@@ -6,6 +6,36 @@
     <style type="text/css">
         {% include "style.css" %}
     </style>
+
+{% if trivy %} 
+<script>
+    window.onload = function() {
+      document.querySelectorAll('td.links').forEach(function(linkCell) {
+        var links = [].concat.apply([], linkCell.querySelectorAll('a'));
+        [].sort.apply(links, function(a, b) {
+          return a.href > b.href ? 1 : -1;
+        });
+        links.forEach(function(link, idx) {
+          if (links.length > 3 && 3 === idx) {
+            var toggleLink = document.createElement('a');
+            toggleLink.innerText = "Toggle more links";
+            toggleLink.href = "#toggleMore";
+            toggleLink.setAttribute("class", "toggle-more-links");
+            linkCell.appendChild(toggleLink);
+          }
+          linkCell.appendChild(link);
+        });
+      });
+      document.querySelectorAll('a.toggle-more-links').forEach(function(toggleLink) {
+        toggleLink.onclick = function() {
+          var expanded = toggleLink.parentElement.getAttribute("data-more-links");
+          toggleLink.parentElement.setAttribute("data-more-links", "on" === expanded ? "off" : "on");
+          return false;
+        };
+      });
+    };
+  </script>
+{% endif %}
 </head>
 
 <h1> Build information </h1>
@@ -102,6 +132,8 @@ Commit ID: {{ basic.commit_id }} <br>
  
     </table><br>  
 {% endif %}
-
+{% if trivy %} 
+{{trivy}}
+{% endif %}
 </body>
 </html>

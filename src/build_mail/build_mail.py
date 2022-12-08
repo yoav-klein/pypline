@@ -1,5 +1,6 @@
 
 import os
+import re 
 import argparse
 import subprocess
 import json
@@ -19,6 +20,18 @@ def coverage(coberture_path) -> dict:
         print(f"{atr_k}: {dic_of_atrib[atr_k]}")
     return dic_of_atrib
 
+def trivy(report_path) -> str:
+
+    f = open(report_path, "r")
+
+    html_content = f.read()
+
+    m=re.match('.*</head>.*<body>(.*)</body>.*', html_content , flags=re.S)
+    body_contnet = m.group(1)
+
+    f.close()
+
+    return body_contnet
     
 def blackduck() -> str:
     """
@@ -139,9 +152,14 @@ def render_template(args):
 
     if args.code_coverage:
         context['coverage'] = coverage(args.code_coverage)
+    if args.trivy_report_html:
+        context['trivy'] = trivy(args.trivy_report_html)
 
     print(context)
     print(template.render(context))
+    f = open("report.html", "w")
+    f.write(template.render(context))
+    f.close()
 
 
 def parse_args():
