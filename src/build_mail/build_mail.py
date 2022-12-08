@@ -6,6 +6,7 @@ import subprocess
 import json
 from jinja2 import Environment, PackageLoader
 import xml.etree.ElementTree as ET
+
 class Globals:
     ci_env = ''
 
@@ -88,51 +89,64 @@ def test_results():
     html_block = "test results"
     return html_block
 
+
 def basic() -> dict:
     """
     returns a dictionary that contains basic build information
     """
     # Mail subject : Pipeline Name - Project Name - Build Status
     
-    # icon Jenkins / Azure 
-    # project_name - TFS - Team Project, Jenkins - none
-    # repo_name
-    # branch 
-    # commit: commit ID(link)
-    # Pipline Name : build number/id(link)
-    # trigger ?
-    # status 
+    # project name    | TFS - body
+    # pipeline name   | TFS/Jenkins - subject, body
+    # build number    | TFS/Jenkins - body (link to build_url)
+    # status          | TFS/Jenkins - subject, body
+    # trigger         | TFS - body
+    
+    # repo name       | TFS - subject, body
+    # branch          | TFS/Jenkins - subject, body
+    # commit id       | TFS/Jenkins - 8 chars in subject, body (NTH: link to the commit in the repo)
+    # commit msg      | TFS - body
+    
+    # subject_tfs    : pipeline_name, status, repo_name, branch, commit ID - f'[Build {status}] - {pipeline_name} - {repo_name}:{branch} - {commit_id}'
+    # subject_jenkins: pipeline_name, status, branch, commit_id - f'[Build {status}] - {pipeline_name} - {*maybe repo name:branch} - {commit_id}'
 
     if(Globals.ci_env == "TFS"):
         data = {
-            'project_name': os.environ['SYSTEM_TEAMPROJECT'],
-            'repo_name': os.environ['BUILD_REPOSITORY_NAME'],
-            'branch_name': os.environ['BUILD_SOURCEBRANCHNAME'],
-            'commit_title': os.environ['BUILD_SOURCEVERSIONMESSAGE'],
-            'commit_id': os.environ['BUILD_SOURCEVERSION'],
-            'build_url': f"{os.environ['SYSTEM_TEAMFOUNDATIONCOLLECTIONURI']}/Amitay_Test_Proj/_build/results?buildId=11373"
+            'project_name': { 'name': 'Project Name', 'val': os.environ['SYSTEM_TEAMPROJECT'] },
+            'pipeline_name': { 'name': 'Pipeline Name', 'val': os.environ['BUILD_DEFINITIONANME'] },
+            'build_number': { 'name': 'Build number', 'val':  os.environ['BUILD_BUILDID'], 
+                'link': f"{os.environ['SYSTEM_COLLECTIONURI']}/{os.environ['SYSTEM_TEAMPROJECT']}/build/results?buildId={os.environ['BUILD_BUILDID']}"},
+            'status': { 'name': 'Status', 'val': os.environ['AGENT_JOBSTATUS'] },
+            'trigger': { 'name': 'Trigger', 'val': os.environ['BUILD_REASON']},
+            'repo_name': { 'name': 'Repository Name', 'val': os.environ['BUILD_REPOSITORY_NAME'] },
+            'branch_name': { 'name': 'Branch', 'val': os.environ['BUILD_SOURCEBRANCHNAME'] },
+            'commit_message': { 'name': 'Commit Message', 'val': os.environ['BUILD_SOURCEVERSIONMESSAGE'] }, # NTH: link to the commit
+            'commit_id': { 'name': 'Commit ID', 'val':os.environ['BUILD_SOURCEVERSION'] }
         }
+        
+    elif Globals.ci_env == "Jenkins":
+        data = {
+            'pipeline_name': { 'name': 'Pipeline Name', 'val': os.environ['JOB_NAME'] },
+            'build_number': { 'name': 'Build number', 'val':  os.environ['BUILD_ID'],  'link': os.environ['BUILD_URL'] },
+            'status': { 'name': 'Status', 'val': os.environ['AGENT_JOBSTATUS'] },
+            'branch_name': { 'name': 'Branch', 'val': os.environ['GIT_BRANCH'] },
+            'commit_id': { 'name': 'Commit ID', 'val':os.environ['GIT_COMMIT'] }
+        }
+    
+    elif Globals.ci_env == "test":
+        data = {
+            'project_name': { 'name': 'Project Name', 'val': "DemoProject" },
+            'pipeline_name': { 'name': 'Pipeline Name', 'val': "Demo Pipeline" },
+            'build_number': { 'name': 'Build number', 'val':  "12", 
+                'link': "http://broken.url"},
+            'status': { 'name': 'Status', 'val': "Success" },
+            'trigger': { 'name': 'Trigger', 'val': "Manual" },
+            'repo_name': { 'name': 'Repository Name', 'val': "KipatBarzel" },
+            'branch_name': { 'name': 'Branch', 'val': "feature" },
+            'commit_message': { 'name': 'Commit Message', 'val': "one two three" }, # NTH: link to the commit
+            'commit_id': { 'name': 'Commit ID', 'val': "a12b34c56" }
+         }
 
-            #build_num = os.environ['BUILD_ID']
-            #message_v = f"[{os.environ['SYSTEM'].upper()} {os.environ['AGENT_JOBSTATUS']}] {os.environ['BUILD_DEFINITIONNAME']} - {os.environ['BUILD_REPOSITORY_NAME']}:{os.environ['BUILD_SOURCEBRANCHNAME']}"
-    elif(Globals.ci_env == "Jenkins"):
-        project_name = "MYPROJECT"
-        repo_name = "repo"
-        branch_name = "master"
-        commit_title = "bla bla"
-        commit_id = "12345678"
-        build_url = "nothing" 
-        build_num = "12345678"
-        message_v = "mail message"
-
-    data = {
-        "build_name": "Kuku",
-        "build_number": 100,
-        "result": "Success",
-        "commit_id": "1a2b3c",
-        "branch": "develop",
-        "repository": "Kipat Barzel"
-    }
     return data
 
 def render_template(args):
@@ -181,7 +195,13 @@ def parse_args():
     return args
 
 def set_environment():
-    pass
+    if 'JENKINS_HOME' in os.environ:
+        Globals.ci_env = "Jenkins"
+    if 'SYSTEM_COLLECTIONURI' in os.environ:
+        Globals.ci_env = "TFS"
+    else:
+        Globals.ci_env = "test"
+
 
 def main():
     args = parse_args()
