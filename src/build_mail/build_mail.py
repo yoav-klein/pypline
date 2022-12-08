@@ -79,14 +79,16 @@ def basic() -> dict:
     """
     returns a dictionary that contains basic build information
     """
-
+    # Mail subject : Pipeline Name - Project Name - Build Status
+    
+    # icon Jenkins / Azure 
     # project_name - TFS - Team Project, Jenkins - none
     # repo_name
-    # branch
-    # commit ID/Commit URL
-    # build number/id
-    # trigger
-    # status
+    # branch 
+    # commit: commit ID(link)
+    # Pipline Name : build number/id(link)
+    # trigger ?
+    # status 
 
     if(Globals.ci_env == "TFS"):
         data = {
